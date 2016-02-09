@@ -40,6 +40,10 @@ class HangpersonApp < Sinatra::Base
   post '/guess' do
     letter = params[:guess].to_s[0]
     ### YOUR CODE HERE ###
+    if @game.check_win_or_lose == :win
+      redirect '/win'
+    end
+    @game.guess(letter)
     redirect '/show'
   end
   
@@ -50,7 +54,13 @@ class HangpersonApp < Sinatra::Base
   # wrong_guesses and word_with_guesses from @game.
   get '/show' do
     ### YOUR CODE HERE ###
-    erb :show # You may change/remove this line
+    if @game.check_win_or_lose == :play
+      erb :show # You may change/remove this line
+    elsif @game.check_win_or_lose == :win
+      redirect '/win'
+    else
+      redirect 'lose'
+    end
   end
   
   get '/win' do
@@ -63,4 +73,70 @@ class HangpersonApp < Sinatra::Base
     erb :lose # You may change/remove this line
   end
   
+end
+
+class HangpersonGame
+  attr_reader :word, :guesses, :wrong_guesses
+  
+  def initialize(w)
+    @word=w
+    @guesses=""
+    @wrong_guesses=""
+  end
+  
+  def word
+    return @word
+  end
+  
+  def guesses
+    return @guesses
+  end
+  
+  def wrong_guesses
+    return @wrong_guesses
+  end
+  
+  def guess(g)
+    if g.nil? or g.empty? or not g =~ /[A-Za-z]/
+      raise ArgumentError.new("ArgumentError")
+    end
+    g = g.downcase
+    if @word.include? g
+      if @guesses.include? g
+        return false
+      else
+       @guesses = @guesses + g
+      end
+    else
+      if @wrong_guesses.include? g
+        return false
+      else
+        @wrong_guesses = @wrong_guesses + g
+      end
+    end
+    return true
+  end
+  
+  def word_with_guesses
+    r = ""
+    @word.split("").each do |i|
+      if @guesses.include? i
+        r << i
+      else
+        r << "-"
+      end
+    end
+    return r
+  end
+  
+  def check_win_or_lose
+    if @wrong_guesses.length >= 7
+      return :lose
+    elsif @guesses.length == word.length
+      return :win
+    else
+      return :play
+    end
+  end
+
 end
