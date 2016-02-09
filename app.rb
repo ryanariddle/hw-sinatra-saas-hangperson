@@ -47,7 +47,7 @@ class HangpersonApp < Sinatra::Base
     end
     if not r
       if not letter =~ /[A-Za-z]/
-        flash[:message] = "Invalid input."
+        flash[:message] = "Invalid guess."
       else
         flash[:message] = "You have already used that letter."
       end
