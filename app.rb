@@ -46,7 +46,10 @@ class HangpersonApp < Sinatra::Base
       flash[:notice] = e.message
     end
     if not r
-      flash[:message] = "You have already used that letter"
+      if @wrong_guesses.include? letter or @guesses.include? letter
+        flash[:message] = "You have already used that letter."
+      else
+        flash[:message] = "Invalid guess."
     end
     redirect '/show'
   end
