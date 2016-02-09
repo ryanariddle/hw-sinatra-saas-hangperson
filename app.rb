@@ -46,10 +46,10 @@ class HangpersonApp < Sinatra::Base
       flash[:notice] = e.message
     end
     if not r
-      if @wrong_guesses.include? letter or @guesses.include? letter
-        flash[:message] = "You have already used that letter."
+      if not letter =~ /[A-Za-z]/
+        flash[:message] = "Invalid input."
       else
-        flash[:message] = "Invalid guess."
+        flash[:message] = "You have already used that letter."
       end
     end
     redirect '/show'
@@ -146,7 +146,7 @@ class HangpersonGame
   def check_win_or_lose
     if @wrong_guesses.length >= 7
       return :lose
-    elsif @guesses.length == word.length
+    elsif not word_with_guesses.include? "-"
       return :win
     else
       return :play
